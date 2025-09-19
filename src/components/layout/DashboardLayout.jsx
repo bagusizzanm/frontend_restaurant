@@ -193,8 +193,7 @@ const DashboardLayout = ({ activeMenu, children }) => {
                 e.stopPropagation();
                 setProfileDropdownOpen(!profileDropdownOpen);
               }}
-              avatar={user?.avatar || ""}
-              companyName={user?.name || ""}
+              name={user?.name || ""}
               email={user?.email || ""}
               onLogout={logout}
             />

@@ -6,10 +6,14 @@ export const API_PATH = {
     LOGOUT: `${BASE_URL}/logout`,
   },
   ORDER: {
-    GET: `${BASE_URL}/order`,
+    GET: `${BASE_URL}/orders`,
     POST: `${BASE_URL}/orders`,
   },
   TABLES: {
     GET: `${BASE_URL}/tables`,
+  },
+  MENU: {
+    POST: `${BASE_URL}/menus`,
+    GET: `${BASE_URL}/menus`,
   },
 };

@@ -5,13 +5,13 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATH } from "../../utils/apiPath";
 import { Legend, QuickStats } from "@/components/layout/StatusLegendStat";
-import { FormDialog } from "../components/layout/FormDialog";
+import DetailsTable from "../components/layout/DetailsTable";
 
 const Dashboard = () => {
   const [tables, setTables] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTable, setSelectedTable] = useState(null);
-  const [openDialog, setOpenDialog] = useState(false);
+  const [choosedTable, setChoosedTable] = useState(false);
 
   const getTables = async () => {
     try {
@@ -31,17 +31,25 @@ const Dashboard = () => {
     getTables();
   }, []);
 
-  const handleSelectTable = (table) => {
-    setSelectedTable(table);
-    setOpenDialog(true);
-  };
-
   const statusColor = {
     available: "bg-green-400",
     occupied: "bg-red-400",
     reserved: "bg-yellow-400",
     inactive: "bg-gray-400",
   };
+
+  if (choosedTable) {
+    return (
+      <div>
+        <DashboardLayout activeMenu="dashboard">
+          <DetailsTable
+            table={choosedTable}
+            setChoosedTable={setChoosedTable}
+          />
+        </DashboardLayout>
+      </div>
+    );
+  }
 
   return (
     <DashboardLayout activeMenu="dashboard">
@@ -62,24 +70,21 @@ const Dashboard = () => {
                 <p className="col-span-6 text-center">Loading...</p>
               ) : (
                 tables.map((table) => (
-                  <DialogTrigger>
-                    <Button
-                      type="button"
-                      onClick={() => handleSelectTable(table)}
-                      key={table.id}
-                      className={`h-16 flex items-center justify-center rounded-md text-white font-semibold cursor-pointer transition 
+                  <Button
+                    type="button"
+                    onClick={() => setChoosedTable(table)}
+                    key={table.id}
+                    className={`h-16 flex items-center justify-center rounded-md text-white font-semibold cursor-pointer transition 
                       ${statusColor[table.status] || "bg-gray-300"}`}
-                    >
-                      {table.number}
-                    </Button>
-                  </DialogTrigger>
+                  >
+                    {table.number}
+                  </Button>
                 ))
               )}
             </div>
           </div>
           <QuickStats tables={tables} />
         </div>
-        <FormDialog table={selectedTable} onSuccess={getTables} />
       </div>
     </DashboardLayout>
   );

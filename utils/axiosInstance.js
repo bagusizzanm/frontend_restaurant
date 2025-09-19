@@ -44,7 +44,6 @@ axiosInstance.interceptors.response.use(
       if (error.response.status === 401) {
         console.error("Unauthorized. Please, login again.");
         toast.error("Unauthorized. Please, login again.", toastStyleError);
-        window.location.href = "/login";
       } else if (error.response.status === 500) {
         console.error("Server error. Please, try again later.");
         toast.error("Server error. Please, try again later.", toastStyleError);

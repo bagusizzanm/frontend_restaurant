@@ -10,8 +10,10 @@ import { AlertCircleIcon, Eye, EyeOff, Loader } from "lucide-react";
 import { validateForm } from "../../../utils/helper";
 import { axiosInstance } from "../../../utils/axiosInstance";
 import { API_PATH } from "../../../utils/apiPath";
+import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -50,6 +52,7 @@ const Login = () => {
         email: formData.email,
         password: formData.password,
       });
+      console.log(response.data);
       setFormState((prev) => ({
         ...prev,
         loading: false,
@@ -57,6 +60,9 @@ const Login = () => {
         errors: {},
         message: response.data.message,
       }));
+
+      const token = response.data.token;
+      if (token) login(response.data.user, token);
 
       toast.success(response.data.message, toastStyleSuccess);
       setTimeout(() => {
