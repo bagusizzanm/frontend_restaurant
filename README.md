@@ -1,12 +1,84 @@
-# React + Vite
+# Frontend Restaurant Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend untuk Restaurant Management System menggunakan **React.js + Vite** dengan dukungan autentikasi, manajemen meja, pesanan, dan laporan.
 
-Currently, two official plugins are available:
+## 🚀 Fitur
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Login (multiple role: server, kasir)
+- Dashboard status meja (Available, Occupied, Reserved, Inactive)
+- Manajemen menu makanan & minuman (CRUD)
+- Pemesanan meja & tambah item ke order
+- List order & tutup order
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- [React.js](https://reactjs.org/)
+- [Vite](https://vitejs.dev/)
+- [TailwindCSS](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [axios](https://axios-http.com/)
+- [react-hot-toast](https://react-hot-toast.com/)
+- [react-router-dom](https://reactrouter.com/)
+- [react-to-print](https://www.npmjs.com/package/react-to-print)
+
+## 📂 Struktur Proyek
+
+```
+src/
+ ├── components/
+ │   ├── layout/
+ │   │   ├── DashboardLayout.jsx
+ │   │   └── Table.jsx
+ │   ├── ui/
+ │   │   ├── button.jsx
+ │   │   ├── input.jsx
+ │   │   ├── dialog.jsx
+ │   │   └── table.jsx
+ │   └── StatusLegendStat.jsx
+ │
+ ├── pages/
+ │   ├── Dashboard.jsx
+ │   ├── DetailsTable.jsx
+ │   ├── ListOrder.jsx
+ │   ├── MasterMenu.jsx
+ │   └── GuestTable.jsx
+ │
+ ├── context/
+ │   └── AuthContext.jsx
+ │
+ ├──
+ │
+ └── main.jsx
+utils/
+  ├── axiosInstance.js
+  ├── apiPath.js
+  ├── statusConfig.js
+  └── helper.js
+```
+
+## ⚙️ Instalasi
+
+1. Clone repositori:
+
+   ```bash
+   git clone https://github.com/bagusizzanm/frontend_restaurant.git
+   cd restaurant-frontend
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Jalankan development server:
+
+   ```bash
+   npm run dev
+   ```
+
+## 📌 Catatan
+
+- Role login (`server` atau `kasir`).
+- Semua request API menggunakan `axiosInstance` dengan token dari `AuthContext`.
+- Jika ada error `401 Unauthenticated`, pastikan backend sudah berjalan dan token login tersimpan dengan benar.
