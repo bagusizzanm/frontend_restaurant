@@ -17,7 +17,7 @@ const NAVIGATION_MENU = [
     icon: CookingPot,
   },
   {
-    id: "list-makanan",
+    id: "list-pesanan",
     name: "List Pesanan",
     icon: ListOrdered,
   },
@@ -106,7 +106,7 @@ const DashboardLayout = ({ activeMenu, children }) => {
         <div className="flex items-center h-16 border-b border-gray-100 pl-6">
           {!sidebarCollapse() ? (
             <Link className="flex items-center space-x-3" to="/">
-              <div className="size-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-xl">
+              <div className="size-8 bg-gradient-to-r from-black to-zinc-700 rounded-lg flex items-center justify-center shadow-xl">
                 <Cake className="size-5 text-white" />
               </div>
               <span className="text-gray-900 font-bold text-xl ">
@@ -178,7 +178,7 @@ const DashboardLayout = ({ activeMenu, children }) => {
             )}
             <div>
               <h1 className="text-base font-semibold text-gray-900">
-                Welcome Back !
+                Selamat Datang,
               </h1>
               <p className="text-sm text-gray-500 hidden sm:block">
                 di restaurant kami.

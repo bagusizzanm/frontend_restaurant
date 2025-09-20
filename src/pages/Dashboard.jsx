@@ -6,6 +6,9 @@ import axiosInstance from "../../utils/axiosInstance";
 import { API_PATH } from "../../utils/apiPath";
 import { Legend, QuickStats } from "@/components/layout/StatusLegendStat";
 import DetailsTable from "../components/layout/DetailsTable";
+import { LoaderCircle } from "lucide-react";
+import { createOrder, getActiveOrderByTable } from "../services/orderService";
+import { toastStyleError } from "../../utils/helper";
 
 const Dashboard = () => {
   const [tables, setTables] = useState([]);
@@ -30,6 +33,40 @@ const Dashboard = () => {
   useEffect(() => {
     getTables();
   }, []);
+
+  const handleChooseTable = async (table) => {
+    try {
+      const res = await createOrder(table.id);
+      console.log("Order untuk meja: ", res.order);
+
+      setChoosedTable({
+        ...table,
+        order: res.order.table_restaurant.id,
+      });
+      console.log("Meja yang dipilih: ", choosedTable);
+      toast.success(
+        "Meja berhasil dipilih. Silahkan menambahkan pesanan",
+        toastStyleSuccess
+      );
+    } catch (error) {
+      if (error.response?.status === 400) {
+        // ambil order lama pada table ini
+        const existingOrder = await getActiveOrderByTable(table.id);
+        console.log("Order lama:", existingOrder);
+        if (existingOrder) {
+          setChoosedTable({
+            ...table,
+            order: existingOrder,
+          });
+        } else {
+          toast.error("Tidak menemukan order aktif untuk meja ini");
+        }
+      } else {
+        console.error("Gagal pilih meja:", error);
+        toast.error("Gagal memilih meja", toastStyleError);
+      }
+    }
+  };
 
   const statusColor = {
     available: "bg-green-400",
@@ -67,12 +104,15 @@ const Dashboard = () => {
             {/* Grid Meja */}
             <div className="grid grid-cols-6 gap-4 mt-6">
               {loading ? (
-                <p className="col-span-6 text-center">Loading...</p>
+                <p className="flex items-center justify-center col-span-6">
+                  <LoaderCircle className="animate-spin mr-2 text-orange-400" />{" "}
+                  Loading...
+                </p>
               ) : (
                 tables.map((table) => (
                   <Button
                     type="button"
-                    onClick={() => setChoosedTable(table)}
+                    onClick={() => handleChooseTable(table)}
                     key={table.id}
                     className={`h-16 flex items-center justify-center rounded-md text-white font-semibold cursor-pointer transition 
                       ${statusColor[table.status] || "bg-gray-300"}`}

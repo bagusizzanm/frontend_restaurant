@@ -7,26 +7,43 @@ import axiosInstance from "../../../utils/axiosInstance";
 import { API_PATH } from "../../../utils/apiPath";
 import {
   ArrowLeft,
+  LoaderCircle,
   MinusIcon,
-  Plus,
   PlusIcon,
   Printer,
   Save,
-  Send,
   SendIcon,
+  Trash,
 } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import { toastStyleError, toastStyleSuccess } from "../../../utils/helper";
+import toast from "react-hot-toast";
+import { addItemToOrder, createOrder } from "../../services/orderService";
 
 const DetailsTable = ({ table, setChoosedTable }) => {
   const [menus, setMenus] = useState([]);
   const [orderItems, setOrderItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const [orderId, setOrderId] = useState(table?.order?.id || null);
+
+  useEffect(() => {
+    if (table?.order?.id) {
+      setOrderId(table.order.id);
+    }
+  }, [table]);
 
   const getMenus = async () => {
     try {
       const response = await axiosInstance.get(API_PATH.MENU.GET);
-      console.log(response.data);
       setMenus(response.data);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       console.error("Error fetching menus: ", error);
+      toast.error("Error fetching menus: ", error, toastStyleError);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,14 +88,52 @@ const DetailsTable = ({ table, setChoosedTable }) => {
     0
   );
 
+  const handleSendToKitchen = async () => {
+    if (!orderId) {
+      const newOrder = await createOrder(table.id);
+      console.log("API response createOrder:", newOrder);
+      currentOrderId = newOrder.id ?? newOrder.order?.id;
+      setOrderId(currentOrderId);
+      console.log("Table props:", table);
+      console.log("Order id in DetailsTable:", table?.order?.id);
+    }
+    try {
+      for (const item of orderItems) {
+        setLoading(true);
+        await addItemToOrder(orderId, item.id, item.qty);
+      }
+      console.log("items: ", orderItems);
+
+      toast.success("Pesanan berhasil di proses!", toastStyleSuccess);
+      setOrderItems([]);
+      setLoading(false);
+    } catch (error) {
+      if (error.response) {
+        console.error("Server error: ", error.response.data);
+        toast.error(
+          error.response.data.message || "Server error",
+          toastStyleError
+        );
+      } else if (error.request) {
+        console.error("No response: ", error.request);
+        toast.error("Tidak ada respon dari server", toastStyleError);
+      } else {
+        console.error("Error sending order: ", error.message);
+        toast.error(error.message, toastStyleError);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen">
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b bg-white rounded-lg">
+      <div className="flex items-center justify-around p-3 border-b bg-white rounded-lg">
         <div className="w-full flex justify-between items-center gap-2">
           <Button
             variant="ghost"
-            className="flex justify-center items-center cursor-pointer font-medium"
+            className="flex justify-center items-center cursor-pointer font-medium bg-gray-100 hover:bg-gray-200 text-gray-700"
             onClick={() => setChoosedTable(null)}
           >
             <ArrowLeft strokeWidth={1.5} className="size-4" /> Back
@@ -94,7 +149,11 @@ const DetailsTable = ({ table, setChoosedTable }) => {
           <Tabs defaultValue={categories[0]} className="w-full">
             <TabsList className="flex gap-2 mb-4">
               {categories.map((cat) => (
-                <TabsTrigger key={cat} value={cat}>
+                <TabsTrigger
+                  key={cat}
+                  value={cat}
+                  className="capitalize cursor-pointer"
+                >
                   {cat}
                 </TabsTrigger>
               ))}
@@ -154,6 +213,7 @@ const DetailsTable = ({ table, setChoosedTable }) => {
                   <div className="flex items-center gap-2 mt-1">
                     <Button
                       size="icon"
+                      className="cursor-pointer"
                       variant="outline"
                       onClick={() => updateQty(item.id, "dec")}
                     >
@@ -162,22 +222,22 @@ const DetailsTable = ({ table, setChoosedTable }) => {
                     <span>{item.qty}</span>
                     <Button
                       variant="outline"
+                      className="cursor-pointer"
                       onClick={() => updateQty(item.id, "inc")}
                     >
                       <PlusIcon className="size-3" />
                     </Button>
                     <Button
                       size="icon"
-                      variant="ghost"
+                      className="hover:bg-red-800 cursor-pointer"
+                      variant="destructive"
                       onClick={() => removeItem(item.id)}
                     >
-                      🗑
+                      <Trash className="size-3" />
                     </Button>
                   </div>
                 </div>
-                <p className="font-semibold">
-                  Rp {(item.price * item.qty).toFixed(2)}
-                </p>
+                <p className="font-semibold">Rp {item.price * item.qty}</p>
               </div>
             ))}
           </div>
@@ -188,15 +248,25 @@ const DetailsTable = ({ table, setChoosedTable }) => {
               <span>Total:</span>
               <span>Rp {total}</span>
             </div>
-            <Button className="w-full">
-              <SendIcon className="size-4" />
-              Send to Kitchen
+            <Button
+              className="w-full cursor-pointer"
+              onClick={handleSendToKitchen}
+            >
+              {loading ? (
+                <>
+                  <LoaderCircle className="size-4 animate-spin" /> Sending...
+                </>
+              ) : (
+                <>
+                  <SendIcon className="size-4" /> Send to kitchen
+                </>
+              )}
             </Button>
             <div className="flex gap-2">
-              <Button variant="outline" className="w-1/2">
+              <Button variant="outline" className="w-1/2 cursor-pointer">
                 <Save className="size-4" /> Save Draft
               </Button>
-              <Button variant="outline" className="w-1/2">
+              <Button variant="outline" className="w-1/2 cursor-pointer">
                 <Printer className="size-4" /> Print Bill
               </Button>
             </div>

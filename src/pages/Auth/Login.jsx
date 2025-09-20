@@ -7,7 +7,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
 import { AlertCircleIcon, Eye, EyeOff, Loader } from "lucide-react";
-import { validateForm } from "../../../utils/helper";
+import { toastStyleSuccess, validateForm } from "../../../utils/helper";
 import { axiosInstance } from "../../../utils/axiosInstance";
 import { API_PATH } from "../../../utils/apiPath";
 import { useAuth } from "../../context/AuthContext";
@@ -82,26 +82,7 @@ const Login = () => {
       }));
     }
   };
-  const toastStyleSuccess = {
-    position: "top-right",
-    duration: 5000,
-    style: {
-      background: "#15803d",
-      color: "#fff",
-      padding: "10px",
-      borderRadius: "10px",
-    },
-  };
-  const toastStyleError = {
-    position: "top-right",
-    duration: 5000,
-    style: {
-      background: "#b91c1c",
-      color: "#fff",
-      padding: "10px",
-      borderRadius: "10px",
-    },
-  };
+
   return (
     <div className="min-h-screen flex items-center justify-center px-16">
       <div className="container mx-auto rounded-lg overflow-hidden flex items-center bg-white border border-gray-100">

@@ -31,3 +31,24 @@ export const validateForm = (setFormState, formData) => {
   setFormState((prev) => ({ ...prev, errors }));
   return Object.keys(errors).length === 0;
 };
+
+export const toastStyleSuccess = {
+  position: "top-right",
+  duration: 5000,
+  style: {
+    background: "#15803d",
+    color: "#fff",
+    padding: "10px",
+    borderRadius: "10px",
+  },
+};
+export const toastStyleError = {
+  position: "top-right",
+  duration: 5000,
+  style: {
+    background: "#b91c1c",
+    color: "#fff",
+    padding: "10px",
+    borderRadius: "10px",
+  },
+};

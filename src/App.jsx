@@ -4,6 +4,7 @@ import Dashboard from "./pages/Dashboard.jsx";
 import GuestTable from "./pages/GuestTable.jsx";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./context/AuthContext";
+import ListOrder from "./pages/ListOrder.jsx";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path="/guest" element={<GuestTable />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/list-pesanan" element={<ListOrder />} />
         </Routes>
       </Router>
       <Toaster
