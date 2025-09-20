@@ -18,7 +18,7 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import { toastStyleError, toastStyleSuccess } from "../../../utils/helper";
 import toast from "react-hot-toast";
-import { addItemToOrder, createOrder } from "../../services/orderService";
+import { addItemToOrder, fetchOrderByTable } from "../../services/orderService";
 
 const DetailsTable = ({ table, setChoosedTable }) => {
   const [menus, setMenus] = useState([]);
@@ -28,7 +28,7 @@ const DetailsTable = ({ table, setChoosedTable }) => {
   const [orderId, setOrderId] = useState(table?.order?.id || null);
 
   useEffect(() => {
-    if (table?.order?.id) {
+    if (orderId === null) {
       setOrderId(table.order.id);
     }
   }, [table]);
@@ -83,26 +83,33 @@ const DetailsTable = ({ table, setChoosedTable }) => {
     setOrderItems((prev) => prev.filter((item) => item.id !== id));
   };
 
-  const total = orderItems.reduce(
-    (sum, item) => sum + item.price * item.qty,
-    0
-  );
+  // const total = orderItems.reduce(
+  //   (sum, item) => sum + item.price * item.qty,
+  //   0
+  // );
+  const total = orderItems.reduce((acc, item) => {
+    // Ambil subtotal langsung kalau ada
+    const itemSubtotal = item.subtotal
+      ? parseFloat(item.subtotal)
+      : (item.price ?? item.menu?.price ?? 0) * item.qty;
+
+    return acc + itemSubtotal;
+  }, 0);
 
   const handleSendToKitchen = async () => {
-    if (!orderId) {
-      const newOrder = await createOrder(table.id);
-      console.log("API response createOrder:", newOrder);
-      currentOrderId = newOrder.id ?? newOrder.order?.id;
-      setOrderId(currentOrderId);
-      console.log("Table props:", table);
-      console.log("Order id in DetailsTable:", table?.order?.id);
+    if (!table?.order?.id) {
+      return toast.error(
+        "Order belum tersedia untuk meja ini",
+        toastStyleError
+      );
     }
+    setLoading(true);
     try {
       for (const item of orderItems) {
-        setLoading(true);
-        await addItemToOrder(orderId, item.id, item.qty);
+        await addItemToOrder(table.order.id, item.id, item.qty);
+        console.log("itemId: ", item.id);
+        console.log("tableId: ", table.order.id);
       }
-      console.log("items: ", orderItems);
 
       toast.success("Pesanan berhasil di proses!", toastStyleSuccess);
       setOrderItems([]);
@@ -183,7 +190,10 @@ const DetailsTable = ({ table, setChoosedTable }) => {
                               Rp {parseInt(menu.price).toLocaleString()}
                             </p>
                           </div>
-                          <Button size="icon" onClick={() => addItem(menu)}>
+                          <Button
+                            className="cursor-pointer"
+                            onClick={() => addItem(menu)}
+                          >
                             <PlusIcon />
                           </Button>
                         </div>
@@ -250,6 +260,7 @@ const DetailsTable = ({ table, setChoosedTable }) => {
             </div>
             <Button
               className="w-full cursor-pointer"
+              disabled={!orderItems.length}
               onClick={handleSendToKitchen}
             >
               {loading ? (

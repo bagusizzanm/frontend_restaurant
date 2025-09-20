@@ -8,7 +8,7 @@ import { Legend, QuickStats } from "@/components/layout/StatusLegendStat";
 import DetailsTable from "../components/layout/DetailsTable";
 import { LoaderCircle } from "lucide-react";
 import { createOrder, getActiveOrderByTable } from "../services/orderService";
-import { toastStyleError } from "../../utils/helper";
+import { toastStyleError, toastStyleSuccess } from "../../utils/helper";
 
 const Dashboard = () => {
   const [tables, setTables] = useState([]);
@@ -37,13 +37,13 @@ const Dashboard = () => {
   const handleChooseTable = async (table) => {
     try {
       const res = await createOrder(table.id);
-      console.log("Order untuk meja: ", res.order);
+      // console.log("Order untuk meja: ", res.order);
 
       setChoosedTable({
         ...table,
-        order: res.order.table_restaurant.id,
+        order: res.order,
       });
-      console.log("Meja yang dipilih: ", choosedTable);
+      // console.log("Meja yang dipilih: ", choosedTable);
       toast.success(
         "Meja berhasil dipilih. Silahkan menambahkan pesanan",
         toastStyleSuccess
@@ -52,12 +52,16 @@ const Dashboard = () => {
       if (error.response?.status === 400) {
         // ambil order lama pada table ini
         const existingOrder = await getActiveOrderByTable(table.id);
-        console.log("Order lama:", existingOrder);
+        // console.log("Order lama:", existingOrder);
         if (existingOrder) {
-          setChoosedTable({
-            ...table,
-            order: existingOrder,
-          });
+          if (existingOrder.status === "open") {
+            setChoosedTable({
+              ...table,
+              order: existingOrder,
+            });
+          } else {
+            toast.error(`Order untuk meja ${table.number} sudah selesai`);
+          }
         } else {
           toast.error("Tidak menemukan order aktif untuk meja ini");
         }

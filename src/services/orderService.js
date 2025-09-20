@@ -1,26 +1,23 @@
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATH } from "../../utils/apiPath";
 
-export const createOrder = async (tableId, userId) => {
-  const payload = { table_restaurant_id: tableId, user_id: userId };
+export const createOrder = async (tableId) => {
+  const payload = { table_restaurant_id: tableId };
 
   const res = await axiosInstance.post(API_PATH.ORDER.CREATE, payload);
   return res.data;
 };
 
-export const addItemToOrder = async (orderId, menuId, qty, subtotal = null) => {
-  const payload = { menu_id: menuId, qty };
-  if (subtotal) payload.subtotal = subtotal;
-
+export const addItemToOrder = async (orderId, menuId, qty) => {
   const res = await axiosInstance.post(
-    API_PATH.ORDER.ADD_ITEM(orderId),
-    payload
+    `${API_PATH.ORDER.POST}/${orderId}/items`,
+    { menu_id: menuId, qty }
   );
   return res.data;
 };
 
 export const closeOrder = async (orderId) => {
-  const res = await axiosInstance.put(API_PATH.ORDER.CLOSE(orderId));
+  const res = await axiosInstance.post(API_PATH.ORDER.CLOSE(orderId));
   return res.data;
 };
 
@@ -41,4 +38,13 @@ export const getActiveOrderByTable = async (tableId) => {
     params: { table: tableId, status: "open" },
   });
   return res.data[0] || null;
+};
+
+export const fetchOrderByTable = async (tableId) => {
+  const res = await axiosInstance.get(API_PATH.ORDER.GET, {
+    params: { table_id: tableId, status: "open" },
+  });
+
+  // API return array, ambil order pertama (karena 1 meja hanya boleh punya 1 order open)
+  return res.data.length > 0 ? res.data[0] : null;
 };

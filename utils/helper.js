@@ -33,7 +33,7 @@ export const validateForm = (setFormState, formData) => {
 };
 
 export const toastStyleSuccess = {
-  position: "top-right",
+  position: "top-center",
   duration: 5000,
   style: {
     background: "#15803d",

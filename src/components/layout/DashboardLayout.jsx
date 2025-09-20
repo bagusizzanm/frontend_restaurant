@@ -12,7 +12,7 @@ const NAVIGATION_MENU = [
     icon: LayoutDashboard,
   },
   {
-    id: "makanan",
+    id: "menu-management",
     name: "Master Makanan",
     icon: CookingPot,
   },
