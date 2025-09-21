@@ -6,6 +6,8 @@ import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./context/AuthContext";
 import ListOrder from "./pages/ListOrder.jsx";
 import MasterMenu from "./pages/MasterMenu.jsx";
+import ProtectedRoute from "./route/ProtectedRoute.jsx";
+import NotFound from "./route/NotFound.jsx";
 
 function App() {
   return (
@@ -14,9 +16,15 @@ function App() {
         <Routes>
           <Route path="/guest" element={<GuestTable />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/menu-management" element={<MasterMenu />} />
-          <Route path="/list-pesanan" element={<ListOrder />} />
+          <Route element={<ProtectedRoute roles="pelayan" />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/menu-management" element={<MasterMenu />} />
+          </Route>
+          <Route element={<ProtectedRoute roles={["kasir", "pelayan"]} />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/list-pesanan" element={<ListOrder />} />
+          </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
       <Toaster

@@ -17,6 +17,7 @@ import ConfirmDialog from "../components/common/ConfirmDialog";
 import { toast } from "react-hot-toast";
 import { closeOrder } from "../services/orderService";
 import { toastStyleError, toastStyleSuccess } from "../../utils/helper";
+import DetailOrderDialog from "../components/common/DetailOrderDialog";
 
 const ListOrder = () => {
   const [orders, setOrders] = useState([]);
@@ -96,74 +97,97 @@ const ListOrder = () => {
           </p>
         ) : (
           <div className="grid gap-6">
-            {orders.map((order) => (
-              <Card key={order.id} className="p-4 shadow-none border-none">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg font-semibold">
-                    Meja {order.table?.number}
-                  </h2>
-                  <span
-                    className={`px-3 py-1 text-sm rounded-full ${
-                      order.status === "open"
-                        ? "bg-green-100 text-green-600"
-                        : "bg-gray-200 text-gray-600"
-                    }`}
-                  >
-                    {order.status}
-                  </span>
-                </div>
+            <table className="w-full bg-white rounded-lg text-sm border-collapse">
+              <thead className="bg-gray-100 border-b">
+                <tr>
+                  <th className="py-3 px-4 text-left">No Meja</th>
+                  <th className="py-3 px-4 text-left">Pesanan</th>
+                  <th className="py-3 px-4 text-center">Status</th>
+                  <th className="py-3 px-4 text-right">Total</th>
+                  <th className="py-3 px-4 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orders.map((order) => (
+                  <tr key={order.id} className="border-b last:border-none">
+                    {/* Nomor Meja */}
+                    <td className="py-3 px-4 font-medium">
+                      {order.table?.number}
+                    </td>
 
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead className="border-b">
-                      <tr>
-                        <th className="text-left py-2">Menu</th>
-                        <th className="text-center py-2">Qty</th>
-                        <th className="text-right py-2">Harga</th>
-                        <th className="text-right py-2">Subtotal</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {order.items?.map((item) => (
-                        <tr key={item.id} className="border-b last:border-none">
-                          <td className="py-2">{item.menu?.name}</td>
-                          <td className="py-2 text-center">{item.qty}</td>
-                          <td className="py-2 text-right">
-                            Rp {parseInt(item.menu?.price).toLocaleString()}
-                          </td>
-                          <td className="py-2 text-right">
-                            Rp {parseInt(item.subtotal).toLocaleString()}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                    {/* Daftar Pesanan */}
+                    <td className="py-3 px-4">
+                      <ul className="space-y-1">
+                        {order.items?.map((item) => (
+                          <li key={item.id} className="flex justify-between">
+                            <span>{item.menu?.name}</span>
+                            <span className="text-gray-600">
+                              {item.qty} x Rp{" "}
+                              {parseInt(item.menu?.price).toLocaleString()}
+                            </span>
+                            <span className="font-semibold">
+                              Rp {parseInt(item.subtotal).toLocaleString()}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
 
-                <div className="flex justify-between items-center mt-4">
-                  <span className="font-semibold">
-                    Total: Rp {parseInt(order.total_price).toLocaleString()}
-                  </span>
-                  {order.status === "open" && (
-                    <ConfirmDialog
-                      title="Tutup Order"
-                      message={`Apakah Anda yakin ingin menutup order meja ${order.table?.number}?`}
-                      confirmText="Ya, tutup"
-                      cancelText="Batal"
-                      onConfirm={() => handleCloseOrder(order.id)}
-                      trigger={
-                        <Button
-                          variant="destructive"
-                          className="cursor-pointer hover:bg-red-700"
-                        >
-                          Tutup Order
-                        </Button>
-                      }
-                    />
-                  )}
-                </div>
-              </Card>
-            ))}
+                    {/* Status */}
+                    <td className="py-3 px-4 text-center">
+                      <span
+                        className={`px-3 py-1 text-xs rounded-full ${
+                          order.status === "open"
+                            ? "bg-green-100 text-green-600"
+                            : "bg-gray-200 text-gray-600"
+                        }`}
+                      >
+                        {order.status}
+                      </span>
+                    </td>
+
+                    {/* Total */}
+                    <td className="py-3 px-4 text-right font-semibold">
+                      Rp {parseInt(order.total_price).toLocaleString()}
+                    </td>
+
+                    {/* Aksi */}
+                    <td className="py-3 px-4 text-center space-x-2">
+                      <DetailOrderDialog
+                        order={order}
+                        trigger={
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="cursor-pointer"
+                          >
+                            Detail
+                          </Button>
+                        }
+                      />
+                      {order.status === "open" && (
+                        <ConfirmDialog
+                          title="Tutup Order"
+                          message={`Apakah Anda yakin ingin menutup order meja ${order.table?.number}?`}
+                          confirmText="Ya, tutup"
+                          cancelText="Batal"
+                          onConfirm={() => handleCloseOrder(order.id)}
+                          trigger={
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              className="cursor-pointer hover:bg-red-700"
+                            >
+                              Tutup
+                            </Button>
+                          }
+                        />
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>

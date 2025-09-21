@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const checkAuthStatus = () => {
+    setLoading(true);
     try {
       const token = localStorage.getItem("token");
       const userStr = localStorage.getItem("user");

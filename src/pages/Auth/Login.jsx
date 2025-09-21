@@ -52,7 +52,6 @@ const Login = () => {
         email: formData.email,
         password: formData.password,
       });
-      console.log(response.data);
       setFormState((prev) => ({
         ...prev,
         loading: false,
@@ -64,10 +63,15 @@ const Login = () => {
       const token = response.data.token;
       if (token) login(response.data.user, token);
 
-      toast.success(response.data.message, toastStyleSuccess);
-      setTimeout(() => {
+      const role = response.data.user.role.toLowerCase();
+      console.log("login role: ", role);
+
+      if (role === "pelayan") {
         navigate("/dashboard");
-      }, 1000);
+      } else if (role === "kasir") {
+        navigate("/list-pesanan");
+      }
+      toast.success(response.data.message, toastStyleSuccess);
     } catch (error) {
       setFormState((prev) => ({
         ...prev,

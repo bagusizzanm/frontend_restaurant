@@ -108,7 +108,7 @@ const DetailsTable = ({ table, setChoosedTable }) => {
       for (const item of orderItems) {
         await addItemToOrder(table.order.id, item.id, item.qty);
         console.log("itemId: ", item.id);
-        console.log("tableId: ", table.order.id);
+        console.log("orderId in table: ", table.order.id);
       }
 
       toast.success("Pesanan berhasil di proses!", toastStyleSuccess);

@@ -10,16 +10,19 @@ const NAVIGATION_MENU = [
     id: "dashboard",
     name: "Dashboard",
     icon: LayoutDashboard,
+    allowedRoles: ["pelayan"],
   },
   {
     id: "menu-management",
     name: "Master Makanan",
     icon: CookingPot,
+    allowedRoles: ["pelayan"],
   },
   {
     id: "list-pesanan",
     name: "List Pesanan",
     icon: ListOrdered,
+    allowedRoles: ["kasir", "pelayan"],
   },
 ];
 const NavigationItem = ({ item, isActive, onClick, isCollapse }) => {
@@ -55,6 +58,10 @@ const DashboardLayout = ({ activeMenu, children }) => {
   );
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  const allowedMenu = NAVIGATION_MENU.filter((item) =>
+    item.allowedRoles.includes(user?.role)
+  );
 
   // Atasi masalah responsive
   useEffect(() => {
@@ -121,7 +128,7 @@ const DashboardLayout = ({ activeMenu, children }) => {
         </div>
         {/* Navigation */}
         <nav className="p-4 space-y-2">
-          {NAVIGATION_MENU.map((item) => (
+          {allowedMenu.map((item) => (
             <NavigationItem
               key={item.id}
               item={item}
